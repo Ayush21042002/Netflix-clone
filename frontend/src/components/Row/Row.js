@@ -2,7 +2,7 @@ import { useState, useEffect} from 'react';
 import './Row.css';
 import axios from 'axios';
 import Youtube from 'react-youtube';
-import movieTrailer from 'movie-trailer';
+// import movieTrailer from 'movie-trailer';
 
 const base_url = "https://image.tmdb.org/t/p/original/";
 
@@ -31,18 +31,15 @@ function Row({isLargeRow, title, fetchUrl}) {
 
     // console.log(movies);
 
-    const handleClick = (movie) => {
+    const handleClick = async(movie) => {
         if(trailerUrl){
             setTrailerUrl('');
         }else{
-            movieTrailer(movie.name || "")
-            .then(url => {
-                // console.log(url);
-                const urlParams = new URLSearchParams(new URL(url).search);
-                setTrailerUrl(urlParams.get('v')); 
-            }).catch(error => {
-                console.log(error);
-            });
+            const name = movie?.name || movie?.original_name || movie?.title || "";
+            const response = await axios.get('http://localhost:5000/trailer/' + name);
+            // console.log(response);
+            setTrailerUrl(response.data[0].id.videoId);
+            return response;
         }
     };
 
